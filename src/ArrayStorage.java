@@ -8,6 +8,7 @@ public class ArrayStorage {
     }
 
     void save(Resume r) {
+        //сохранить
     }
 
     Resume get(String uuid) {
