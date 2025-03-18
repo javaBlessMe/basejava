@@ -4,14 +4,7 @@ import com.urise.webapp.model.Resume;
 
 import java.util.Arrays;
 
-/**
- * Array based storage for Resumes
- */
-public class ArrayStorage extends AbstractArrayStorage {
-    private final int STORAGE_LIMIT = 10000;
-    protected final Resume[] storage = new Resume[STORAGE_LIMIT];
-    //private int resumeCount = 0;
-
+public class SortedArrayStorage extends AbstractArrayStorage {
 
     @Override
     public void save(Resume r) {
@@ -20,7 +13,10 @@ public class ArrayStorage extends AbstractArrayStorage {
         } else if (getIndex(r.uuid) >= 0) {
             System.out.println("Резюме с uiid " + r.uuid + " уже есть в базе");
         } else {
-            storage[resumeCount] = r;
+            int index = getIndex(r.uuid);
+            index = (index + 1) * (-1);
+            if (resumeCount - index >= 0) System.arraycopy(storage, index, storage, index + 1, resumeCount - index);
+            storage[index] = r;
             resumeCount++;
         }
     }
@@ -32,26 +28,20 @@ public class ArrayStorage extends AbstractArrayStorage {
             System.out.println("Резюме с uiid " + uuid + " не существует");
             return;
         }
-
-        storage[position] = storage[resumeCount - 1];
+        System.arraycopy(storage, position + 1, storage, position, resumeCount - position);
         storage[resumeCount - 1] = null;
         resumeCount--;
     }
 
-    /**
-     * @return array, contains only Resumes in storage (without null)
-     */
+    @Override
     public Resume[] getAll() {
         return Arrays.copyOf(storage, resumeCount);
     }
 
     @Override
     protected int getIndex(String uuid) {
-        for (int i = 0; i < resumeCount; i++) {
-            if (storage[i].uuid.equals(uuid)) {
-                return i;
-            }
-        }
-        return -1;
+        Resume searchKey = new Resume();
+        searchKey.setUuid(uuid);
+        return Arrays.binarySearch(storage, 0, resumeCount, searchKey);
     }
 }
