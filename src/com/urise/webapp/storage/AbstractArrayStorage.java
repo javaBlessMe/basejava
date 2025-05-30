@@ -1,7 +1,5 @@
 package com.urise.webapp.storage;
 
-import com.urise.webapp.exception.ExistStorageException;
-import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 
@@ -10,7 +8,7 @@ import java.util.Arrays;
 /**
  * Array based storage for Resumes
  */
-public abstract class AbstractArrayStorage implements Storage {
+public abstract class AbstractArrayStorage extends AbstractStorage {
 
     public static final int STORAGE_LIMIT = 10000;
 
@@ -22,10 +20,8 @@ public abstract class AbstractArrayStorage implements Storage {
         return resumeCount;
     }
 
-    public Resume get(String uuid) {
-        if (getIndex(uuid) < 0) {
-            throw new NotExistStorageException(uuid);
-        }
+    @Override
+    public Resume getResume(String uuid) {
         return storage[getIndex(uuid)];
     }
 
@@ -34,31 +30,30 @@ public abstract class AbstractArrayStorage implements Storage {
         resumeCount = 0;
     }
 
-    public void update(Resume r) {
+    @Override
+    public void updateResume(Resume r) {
         int position = getIndex(r.uuid);
-        if (position < 0) {
-            throw new NotExistStorageException(r.getUuid());
-        }
         storage[position] = r;
     }
 
-    public void save(Resume r) {
+    @Override
+    public void saveResume(Resume r) {
         if (resumeCount == storage.length) {
             throw new StorageException("Storage overflow", r.getUuid());
-        } else if (getIndex(r.uuid) >= 0) {
-            throw new ExistStorageException(r.getUuid());
-        } else {
-            addResume(resumeCount, r);
-            resumeCount++;
         }
+        addResume(resumeCount, r);
+        resumeCount++;
     }
 
-    public void delete(String uuid) {
-        if (getIndex(uuid) < 0) {
-            throw new NotExistStorageException(uuid);
-        }
+    @Override
+    public void deleteResume(String uuid) {
         removeResume(uuid);
         resumeCount--;
+    }
+
+    @Override
+    protected boolean isResumeExist(String uuid) {
+        return getIndex(uuid) >= 0;
     }
 
     /**
