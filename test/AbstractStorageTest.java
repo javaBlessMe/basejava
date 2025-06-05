@@ -105,18 +105,6 @@ public abstract class AbstractStorageTest {
         storage.save(resume2);
     }
 
-    /*@Test(expected = StorageException.class)
-    public void saveOverLimit() {
-        for (int i = 3; i < AbstractArrayStorage.STORAGE_LIMIT; i++) {
-            try {
-                storage.save(new Resume());
-            } catch (StorageException se) {
-                Assert.fail("При сохранении резюме под номером " + i + " произошла ошибка");
-            }
-        }
-        storage.save(new Resume());
-    }*/
-
     private void assertSize(int size){
         int factSize = storage.size();
         Assert.assertEquals(size,factSize);

@@ -20,10 +20,6 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         return resumeCount;
     }
 
-    @Override
-    public Resume getResume(String uuid) {
-        return storage[getIndex(uuid)];
-    }
 
     public void clear() {
         Arrays.fill(storage, null);
@@ -31,13 +27,13 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public void updateResume(Resume r) {
-        int position = getIndex(r.uuid);
+    public void updateResume(Resume r, Object searchKey) {
+        int position = (int) searchKey;
         storage[position] = r;
     }
 
     @Override
-    public void saveResume(Resume r) {
+    public void saveResume(Resume r, Object searchKey) {
         if (resumeCount == storage.length) {
             throw new StorageException("Storage overflow", r.getUuid());
         }
@@ -46,14 +42,13 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public void deleteResume(String uuid) {
-        removeResume(uuid);
-        resumeCount--;
+    protected Resume getResume(Object searchKey) {
+        return storage[(int) searchKey];
     }
 
     @Override
-    protected boolean isResumeExist(String uuid) {
-        return getIndex(uuid) >= 0;
+    protected boolean isExisting(Object searchKey) {
+        return (int)searchKey>=0;
     }
 
     /**
@@ -63,9 +58,6 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         return Arrays.copyOf(storage, resumeCount);
     }
 
-    protected abstract void removeResume(String uuid);
-
     protected abstract void addResume(int resumeCount, Resume r);
 
-    protected abstract int getIndex(String uuid);
 }
