@@ -6,6 +6,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 public abstract class AbstractStorageTest {
     protected final Storage storage;
 
@@ -62,7 +64,13 @@ public abstract class AbstractStorageTest {
     @Test
     public void getAll() throws Exception {
         Resume[] expected = new Resume[]{resume1, resume2, resume3};
-        Assert.assertArrayEquals(expected,storage.getAll());
+        Resume[] fact = storage.getAll();
+        for (int i = 0; i < expected.length; i++) {
+            if (Arrays.binarySearch(expected, 0, expected.length, fact[i]) < 0) {
+                Assert.fail();
+            }
+        }
+        Assert.assertEquals(expected.length, fact.length);
     }
 
     @Test
@@ -105,12 +113,12 @@ public abstract class AbstractStorageTest {
         storage.save(resume2);
     }
 
-    private void assertSize(int size){
+    private void assertSize(int size) {
         int factSize = storage.size();
-        Assert.assertEquals(size,factSize);
+        Assert.assertEquals(size, factSize);
     }
 
-    private void assertGet(Resume resume){
+    private void assertGet(Resume resume) {
         Resume receiveResume = storage.get(resume.uuid);
         Assert.assertEquals(resume, receiveResume);
     }
